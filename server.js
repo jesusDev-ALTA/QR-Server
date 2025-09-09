@@ -54,6 +54,7 @@ if (fs.existsSync(distPath)) {
 	);
 }
 
+console.log("Servidor A sirviendo archivos estáticos desde:", distPath);
 server.listen(5122, "0.0.0.0", () => {
 	console.log("Servidor A escuchando en puerto 5122");
 });
