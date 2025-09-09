@@ -2,9 +2,18 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import nocache from "nocache";
+import cors from "cors";
+import bodyParser from "body-parser";
+import fs from "fs";
+import path from "path";
 
 const app = express();
 const server = http.createServer(app);
+app.use(nocache());
+app.use(cors({ origin: "*" }));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 const io = new Server(server, { cors: { origin: "*" } });
 console.log("Iniciando Servidor A...");
 io.on("connection", (socket) => {
@@ -32,14 +41,21 @@ io.on("connection", (socket) => {
 			code,
 			date: dates[idx],
 		}));
-		console.log("Last5QrCodes recibido y organizado:", result);
-		// Enviar al cliente el JSON organizado
-		io.emit("Last5QrCodesWeb", result);
+		socket.emit("Last5QrCodes", result);
 	});
 });
-app.use(express.static("dist"));
-
+// Verifica si la carpeta dist existe antes de servir archivos estáticos
+const distPath = path.resolve("dist");
+if (fs.existsSync(distPath)) {
+	app.use(express.static(distPath));
+} else {
+	console.warn(
+		"La carpeta 'dist' no existe. Por favor, crea la carpeta o genera los archivos necesarios."
+	);
+}
 
 server.listen(5122, "0.0.0.0", () => {
 	console.log("Servidor A escuchando en puerto 5122");
 });
+
+
