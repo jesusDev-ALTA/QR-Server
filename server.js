@@ -38,6 +38,9 @@ io.on("connection", (socket) => {
 	});
 });
 app.use(express.static("dist"));
+app.get("/", (req, res) => {
+	res.send("Servidor A está corriendo");
+});
 
 server.listen(5122, "0.0.0.0", () => {
 	console.log("Servidor A escuchando en puerto 5122");
