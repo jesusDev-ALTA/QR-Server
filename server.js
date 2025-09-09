@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
 			code,
 			date: dates[idx],
 		}));
-		socket.emit("Last5QrCodes", result);
+		io.emit("Last5QrCodesWeb", result);
 	});
 });
 // Verifica si la carpeta dist existe antes de servir archivos estáticos
