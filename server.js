@@ -16,9 +16,19 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: false }));
 const io = new Server(server, { cors: { origin: "*" } });
 console.log("Iniciando Servidor A...");
+
+// Variable para guardar el último resultado de Last5QrCodes
+let last5QrCodesResult = [];
+
 io.on("connection", (socket) => {
 	console.log("Cliente conectado a A:", socket.id);
 	socket.emit("welcome", { message: "Bienvenido al servidor A" });
+
+	// Si hay datos previos, enviarlos al cliente recién conectado
+	if (last5QrCodesResult.length > 0) {
+		io.emit("Last5QrCodesWeb", last5QrCodesResult);
+	}
+
 	socket.on("welcome-response", (data) => {
 		console.log("Respuesta de bienvenida del cliente:", data);
 	});
@@ -41,6 +51,7 @@ io.on("connection", (socket) => {
 			code,
 			date: dates[idx],
 		}));
+		last5QrCodesResult = result; // Guardar el último resultado
 		io.emit("Last5QrCodesWeb", result);
 	});
 });
